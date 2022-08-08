@@ -1,0 +1,13 @@
+# ignore ALL .log files
+*.log
+*.png
+*.json
+*.diff
+*.jpg
+
+**/.ipynb_checkpoints/
+
+# editor settings
+.vscode
+
+configs
