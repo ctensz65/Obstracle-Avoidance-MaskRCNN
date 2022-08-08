@@ -5,9 +5,13 @@
 *.diff
 *.jpg
 
-**/.ipynb_checkpoints/
+**\.ipynb_checkpoints\
 
 # editor settings
 .vscode
+codes\__pycache__\*
+ObstacleAvoidance\src\__pycache__\*
 
 configs
+dataset\*
+trained_model

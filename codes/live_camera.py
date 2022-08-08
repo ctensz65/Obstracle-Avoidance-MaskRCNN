@@ -7,7 +7,7 @@ import cv2
 import argparse
 
 WINDOW_NAME = 'Bisa Yuk'
-DatasetFold = "../custom-datasets/Skenario2"
+DatasetFold = "..\dataset"
 
 def get_model(model_path, config_path, threshold, object):
     # Create config
