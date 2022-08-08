@@ -9,8 +9,9 @@
 
 # editor settings
 .vscode
-__pycache__
 
 configs
 dataset\*
 trained_model
+ObstacleAvoidance\src\__pycache__
+codes\__pycache__
