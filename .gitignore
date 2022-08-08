@@ -9,8 +9,8 @@
 
 # editor settings
 .vscode
-/codes/__pycache__/*
-ObstacleAvoidance\src\__pycache__\*
+\codes\__pycache__\*
+\ObstacleAvoidance\src\__pycache__\*
 
 configs
 dataset\*
