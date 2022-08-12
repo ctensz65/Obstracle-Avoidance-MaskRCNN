@@ -1,4 +1,3 @@
-from concurrent.futures import process
 import cv2
 import torch
 import numpy as np
@@ -14,7 +13,8 @@ from detectron2.config import get_cfg
 
 from detectron2.data.datasets import register_coco_instances
 from processing_object import ObjectsOnRoadProcessor
-from SendToArduino import Velocity
+from SendToArduino import write_data
+
 
 class VisualizationDemo(object):
     def __init__(self, cfg, instance_mode=ColorMode.IMAGE, parallel=False, height=480):
@@ -28,10 +28,9 @@ class VisualizationDemo(object):
         self.metadata = MetadataCatalog.get("Components_train")
         self.cpu_device = torch.device("cpu")
         self.instance_mode = instance_mode
-        
+
         self.cfg = cfg
         self.processing = ObjectsOnRoadProcessor(self)
-        self.Toarduino = Velocity()
 
         self.parallel = parallel
         if parallel:
@@ -54,7 +53,7 @@ class VisualizationDemo(object):
                 yield frame
             else:
                 break
-    
+
     def validasi_dataset(self, frame):
         img = cv2.imread(frame["file_name"])
         image = img[:, :, ::-1]
@@ -88,10 +87,12 @@ class VisualizationDemo(object):
         # Convert image from OpenCV BGR format to Matplotlib RGB format.
         image = image[:, :, ::-1]
 
-        visualizer = Visualizer(image, self.metadata, instance_mode=self.instance_mode)
+        visualizer = Visualizer(image, self.metadata,
+                                instance_mode=self.instance_mode)
         if "instances" in predictions:
             instances = predictions["instances"].to(self.cpu_device)
-            vis_output = visualizer.draw_instance_predictions(predictions=instances)
+            vis_output = visualizer.draw_instance_predictions(
+                predictions=instances)
 
         return predictions, vis_output
 
@@ -107,27 +108,31 @@ class VisualizationDemo(object):
             ndarray: BGR visualizations of each video frame.
         """
         video_visualizer = VideoVisualizer(self.metadata, self.instance_mode)
-        
+
         def process_predictions(frame, predictions):
             frame1 = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
             # Initiate Control Car
-            speed = self.processing.process_objects_on_road(frame1, predictions)
+            speed = self.processing.process_objects_on_road(
+                frame1, predictions)
 
             # Text
             annotate_summary = ("Velocity : " + str(speed))
-            
+
             if "instances" in predictions:
                 predictions = predictions["instances"].to(self.cpu_device)
-                vis_frame = video_visualizer.draw_instance_predictions(frame1, predictions)
-            
+                vis_frame = video_visualizer.draw_instance_predictions(
+                    frame1, predictions)
+
             # Converts Matplotlib RGB format to OpenCV BGR format
             vis_frame = cv2.cvtColor(vis_frame.get_image(), cv2.COLOR_RGB2BGR)
-            vis_frame = cv2.putText(vis_frame, annotate_summary, self.bottomLeftCornerOfText, self.font, self.fontScale, self.fontColor, self.lineType)
+            vis_frame = cv2.putText(vis_frame, annotate_summary, self.bottomLeftCornerOfText,
+                                    self.font, self.fontScale, self.fontColor, self.lineType)
 
             # Send to Arduino
-            self.Toarduino.write_data(speed)
-            
+            toArduino = ("<kiri, " + str(speed) + ">")
+            write_data(toArduino)
+
             return vis_frame
 
         frame_gen = self._frame_from_video(video)
@@ -152,4 +157,3 @@ class VisualizationDemo(object):
         else:
             for frame in frame_gen:
                 yield process_predictions(frame, self.predictor(frame))
-

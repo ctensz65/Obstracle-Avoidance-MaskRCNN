@@ -1,11 +1,13 @@
-# ignore ALL .log files
+# ignore extension
 *.log
 *.png
 *.json
 *.diff
 *.jpg
+*.pyc
+*.pth
 
-**\.ipynb_checkpoints\
+.ipynb_checkpoints
 
 # editor settings
 .vscode
@@ -13,5 +15,8 @@
 configs
 dataset\*
 trained_model
-ObstacleAvoidance\src\__pycache__
-codes\__pycache__
+ObstacleAvoidance\src\__pycache__\
+codes\__pycache__\
+
+# Local History for Visual Studio Code
+.history/

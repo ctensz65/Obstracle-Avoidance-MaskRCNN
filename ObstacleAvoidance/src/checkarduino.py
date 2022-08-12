@@ -3,7 +3,7 @@ import time
 import os
 import sys
 
-ser = serial.Serial('/dev/ttyUSB0', 9600, timeout=1)
+ser = serial.Serial('COM5', 115200, timeout=1)
 time.sleep(2)
 
 

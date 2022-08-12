@@ -1,14 +1,7 @@
-from email.base64mime import body_encode
 import logging
 import time
-from traceback import print_tb
-import numpy as np
-from matplotlib.pyplot import box
-from sklearn.covariance import empirical_covariance
-from extract import compute_center, add_z_coordinate
 from objects import *
 
-from detectron2.engine.defaults import DefaultPredictor
 from detectron2.config import get_cfg
 
 ############################
@@ -24,7 +17,7 @@ class ObjectsOnRoadProcessor(object):
 
     def __init__(self,
                  car=None,
-                 speed_limit=15,
+                 speed_limit=100,
                  width=640,
                  height=480):
         # model: This MUST be a tflite model that was specifically compiled for Edge TPU.
@@ -43,7 +36,7 @@ class ObjectsOnRoadProcessor(object):
 
         #
         self.traffic_objects = {5: GreenTrafficLight(),
-                                1: Bola(10),
+                                1: Bola(140),
                                 0: Kerucut(),
                                 2: Sarden()}
 

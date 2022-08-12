@@ -1,5 +1,4 @@
 import argparse
-from ast import arg
 import multiprocessing as mp
 import numpy as np
 import os
@@ -18,10 +17,10 @@ from detectron2.data import DatasetCatalog
 from detectron2.data.datasets import register_coco_instances
 
 from detector import VisualizationDemo
-from SendToArduino import Velocity
+from SendToArduino import closed_connection
 
 WINDOW_NAME = "Bismillah Bisa"
-objectDir = "/home/falco/codes/Skenario2"
+objectDir = "..\..\dataset"
 
 def setup_cfg(args):
     # load config from file and command-line arguments
@@ -98,14 +97,14 @@ if __name__ == "__main__":
     demo = VisualizationDemo(cfg)
 
     if args.webcam:
-        # cam = cv2.VideoCapture(0)
-        cam = cv2.VideoCapture('http://Cartensz-PC.local:8000/camera/mjpeg?type=.mjpg')
+        cam = cv2.VideoCapture(0)
+        # cam = cv2.VideoCapture('http://Cartensz-PC.local:8000/camera/mjpeg?type=.mjpg')
         for vis in tqdm.tqdm(demo.run_on_video(cam)):
             cv2.namedWindow(WINDOW_NAME, cv2.WINDOW_NORMAL)
             cv2.imshow(WINDOW_NAME, vis)
             if cv2.waitKey(1) == 27:
                 break  # esc to quit
-        Velocity.closed_connection()
+        closed_connection()
         cam.release()
         cv2.destroyAllWindows()
 
