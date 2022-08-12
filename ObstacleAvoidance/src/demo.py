@@ -17,7 +17,7 @@ from detectron2.data import DatasetCatalog
 from detectron2.data.datasets import register_coco_instances
 
 from detector import VisualizationDemo
-from SendToArduino import closed_connection
+# from SendToArduino import closed_connection
 
 WINDOW_NAME = "Bismillah Bisa"
 objectDir = "..\..\dataset"
@@ -82,6 +82,21 @@ def test_opencv_video_format(codec, file_ext):
             return True
         return False
 
+def ResizeWithAspectRatio(image, width=None, height=None, inter=cv2.INTER_AREA):
+    dim = None
+    (h, w) = image.shape[:2]
+
+    if width is None and height is None:
+        return image
+    if width is None:
+        r = height / float(h)
+        dim = (int(w * r), height)
+    else:
+        r = width / float(w)
+        dim = (width, int(h * r))
+
+    return cv2.resize(image, dim, interpolation=inter)
+
 if __name__ == "__main__":
     mp.set_start_method("spawn", force=True)
     args = get_parser().parse_args()
@@ -100,11 +115,12 @@ if __name__ == "__main__":
         cam = cv2.VideoCapture(0)
         # cam = cv2.VideoCapture('http://Cartensz-PC.local:8000/camera/mjpeg?type=.mjpg')
         for vis in tqdm.tqdm(demo.run_on_video(cam)):
-            cv2.namedWindow(WINDOW_NAME, cv2.WINDOW_NORMAL)
+            # cv2.namedWindow(WINDOW_NAME, cv2.WINDOW_NORMAL)
+            vis = ResizeWithAspectRatio(vis, height=1080)
             cv2.imshow(WINDOW_NAME, vis)
             if cv2.waitKey(1) == 27:
                 break  # esc to quit
-        closed_connection()
+        # closed_connection()
         cam.release()
         cv2.destroyAllWindows()
 

@@ -4,6 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from collections import deque
 import multiprocessing as mp
+import time
 
 from detectron2.data import MetadataCatalog, DatasetCatalog
 from detectron2.engine.defaults import DefaultPredictor
@@ -13,7 +14,7 @@ from detectron2.config import get_cfg
 
 from detectron2.data.datasets import register_coco_instances
 from processing_object import ObjectsOnRoadProcessor
-from SendToArduino import write_data
+# from SendToArduino import write_data
 
 
 class VisualizationDemo(object):
@@ -39,12 +40,16 @@ class VisualizationDemo(object):
         else:
             self.predictor = DefaultPredictor(cfg)
 
+        self.new_frame_time = 0
+        self.prev_frame_time = 0
+
         # initialize open cv for drawing boxes
         self.font = cv2.FONT_HERSHEY_SIMPLEX
         self.bottomLeftCornerOfText = (10, height - 10)
-        self.fontScale = .8
+        self.upperLeftCornerOfText = (10, 15)
+        self.fontScale = .5
         self.fontColor = (255, 255, 255)  # white
-        self.lineType = 2
+        self.lineType = 1
 
     def _frame_from_video(self, video):
         while video.isOpened():
@@ -112,26 +117,43 @@ class VisualizationDemo(object):
         def process_predictions(frame, predictions):
             frame1 = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
+            self.new_frame_time = time.time()
+
             # Initiate Control Car
-            speed = self.processing.process_objects_on_road(
+            speed, arahJalan = self.processing.process_objects_on_road(
                 frame1, predictions)
 
             # Text
-            annotate_summary = ("Velocity : " + str(speed))
+            annotate_summary = ("Setpoint: " + str(speed))
 
             if "instances" in predictions:
                 predictions = predictions["instances"].to(self.cpu_device)
                 vis_frame = video_visualizer.draw_instance_predictions(
                     frame1, predictions)
 
+            fps = 1/(self.new_frame_time-self.prev_frame_time)
+            self.prev_frame_time = self.new_frame_time
+
+            # converting the fps into integer
+            fps = int(fps)
+
+            # converting the fps to string so that we can display it on frame
+            # by using putText
+            fps = (str(fps) + " fps")
+
             # Converts Matplotlib RGB format to OpenCV BGR format
             vis_frame = cv2.cvtColor(vis_frame.get_image(), cv2.COLOR_RGB2BGR)
             vis_frame = cv2.putText(vis_frame, annotate_summary, self.bottomLeftCornerOfText,
                                     self.font, self.fontScale, self.fontColor, self.lineType)
+            vis_frame = cv2.putText(
+                vis_frame, fps, self.upperLeftCornerOfText, self.font,
+                self.fontScale, self.fontColor, self.lineType)
 
             # Send to Arduino
-            toArduino = ("<kiri, " + str(speed) + ">")
-            write_data(toArduino)
+            toArduino = ("<" + arahJalan + ", " + str(speed) + ">")
+            print()
+            print(toArduino)
+            # write_data(toArduino)
 
             return vis_frame
 

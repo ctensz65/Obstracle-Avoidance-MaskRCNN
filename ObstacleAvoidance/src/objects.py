@@ -2,6 +2,7 @@ from threading import Timer
 import logging
 import numpy as np
 
+
 class TrafficObject(object):
     def set_car_state(self, car_state):
         pass
@@ -11,35 +12,68 @@ class TrafficObject(object):
         # default: if a sign is 10% of the height of frame
         # obj_height = obj.bounding_box[1][1]-obj.bounding_box[0][1]
         float_formatter = "{:.2f}".format
-        np.set_printoptions(formatter={'float_kind':float_formatter})
+        np.set_printoptions(formatter={'float_kind': float_formatter})
         objHeight = np.array(objHeight)
 
         asu = objHeight / frame_height > min_height_pct
         return asu
 
+    @staticmethod
+    def check_lebar(objXleft, objXright, frame_width):
+        # default: if a sign is 10% of the height of frame
+        # obj_height = obj.bounding_box[1][1]-obj.bounding_box[0][1]
+        float_formatter = "{:.2f}".format
+        np.set_printoptions(formatter={'float_kind': float_formatter})
+        objXleft = np.array(objXleft)
+        objXright = np.array(objXright)
+
+        distanceLeft = abs(0 - objXleft)
+        distanceRight = frame_width - objXright
+
+        # print(distanceLeft)
+        # print(distanceRight)
+
+        if distanceLeft > distanceRight:
+            arahJalan = 3
+            return arahJalan
+        elif distanceLeft < distanceRight:
+            arahJalan = 2
+            return arahJalan
+        else:
+            arahJalan = 1
+            return arahJalan
+
+        # print(frame_width)
+
+
 class GreenTrafficLight(TrafficObject):
 
     def set_car_state(self, car_state):
         logging.debug('green light: make no changes')
-        
+
+
 class Bola(TrafficObject):
     """
     Ekivalen dengan SpeedLimit to 25
     """
+
     def __init__(self, speed_limit):
         self.speed_limit = speed_limit
-    
+
     def set_car_state(self, car_state):
         car_state['speed'] = self.speed_limit
         # return (car_state)
+
 
 class Kerucut(TrafficObject):
     """
     Ekivalen dengan RedLightTraffic
     """
+
     def set_car_state(self, car_state):
         logging.debug('red light: stopping car')
         car_state['speed'] = 0
+
 
 class Sarden(TrafficObject):
     """
@@ -74,7 +108,8 @@ class Sarden(TrafficObject):
             return
 
     def wait_done(self):
-        logging.debug('stop sign: 3) finished waiting for %d seconds' % self.wait_time_in_sec)
+        logging.debug('stop sign: 3) finished waiting for %d seconds' %
+                      self.wait_time_in_sec)
         self.in_wait_mode = False
 
     def clear(self):

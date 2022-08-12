@@ -1,5 +1,7 @@
+from glob import glob
 import logging
 import time
+from tkinter import E
 from objects import *
 
 from detectron2.config import get_cfg
@@ -7,6 +9,9 @@ from detectron2.config import get_cfg
 ############################
 # Frame processing steps
 ############################
+
+topleft = 0
+bottomright = 0
 
 
 class ObjectsOnRoadProcessor(object):
@@ -25,6 +30,11 @@ class ObjectsOnRoadProcessor(object):
         # logging.info('Creating a ObjectsOnRoadProcessor...')
         self.width = width
         self.height = height
+        self.arahJalan = ""
+        self.flagBelok = 1
+
+        self.heightObj = 0
+        self.widthObj = 0
 
         # initialize car
         self.car = car
@@ -40,6 +50,11 @@ class ObjectsOnRoadProcessor(object):
                                 0: Kerucut(),
                                 2: Sarden()}
 
+        self.arahJalan = {0: "mundur",
+                          1: "lurus",
+                          2: "kanan",
+                          3: "kiri"}
+
     def get_boxes(self, outputs):
         pred_boxes = outputs["instances"].pred_boxes.tensor.cpu().numpy()
 
@@ -51,8 +66,8 @@ class ObjectsOnRoadProcessor(object):
         """
         pred_boxes = outputs["instances"].pred_boxes.tensor.cpu().numpy()
 
-        coord_top_left = (int(pred_boxes[0][0]), int(pred_boxes[0][1]))
-        coord_bottom_right = (int(pred_boxes[0][2]), int(pred_boxes[0][3]))
+        coord_top_left = int(pred_boxes[0][0])
+        coord_bottom_right = int(pred_boxes[0][2])
 
         return coord_top_left, coord_bottom_right
 
@@ -61,8 +76,8 @@ class ObjectsOnRoadProcessor(object):
         Untuk mengambil height dan width dari object.
         """
         pred_boxes = outputs["instances"].pred_boxes.tensor.cpu().numpy()
-        width = pred_boxes[:, 2] - pred_boxes[:, 0]
-        height = pred_boxes[:, 3] - pred_boxes[:, 1]
+        width = pred_boxes[0][2] - pred_boxes[0][0]
+        height = pred_boxes[0][3] - pred_boxes[0][1]
 
         return height, width
 
@@ -81,34 +96,39 @@ class ObjectsOnRoadProcessor(object):
     def process_objects_on_road(self, frame, prediction):
         # Main entry point of the Road Object Handler
         logging.debug('Processing objects.................................')
-        # self.cfg = cfg
-        # self.predictor = DefaultPredictor(cfg)
+        global topleft, bottomright
+
         if frame is not None:
             boxes = self.get_boxes(prediction)
             label = self.get_labels(prediction)
-            height, width = self.get_hwframe(prediction)
         else:
             logging.debug(
                 'There Is no Frame to Process.................................')
 
-        # print (label)
-        self.control_car(boxes, label, height)
+        if label.nelement() != 0:
+            self.heightObj, self.widthObj = self.get_hwframe(prediction)
+            topleft, bottomright = self.get_coords(prediction)
+
+        self.control_car(boxes, label, self.heightObj)
         logging.debug('Processing objects END..............................')
 
-        # print ("")
+        arah = self.arahJalan[self.flagBelok]
         # print ("Speed Motor : ", self.speed)
-        return self.speed
+        return self.speed, arah
 
     def control_car(self,
                     boxes,
                     label,
                     height
                     ):
+        global topleft, bottomright
+
         logging.debug('Control car...')
         car_state = {"speed": self.speed_limit,
                      "speed_limit": self.speed_limit}
 
         if len(boxes) == 0:
+            self.flagBelok = 1
             logging.debug(
                 'No objects detected, drive at speed limit of %s.' % self.speed_limit)
 
@@ -120,6 +140,8 @@ class ObjectsOnRoadProcessor(object):
             processor = self.traffic_objects[label]
             if processor.is_close_by(height, self.height):
                 processor.set_car_state(car_state)
+                self.flagBelok = processor.check_lebar(
+                    topleft, bottomright, self.width)
             else:
                 logging.debug(
                     "[%s] object detected, but it is too far, ignoring. " % label)
