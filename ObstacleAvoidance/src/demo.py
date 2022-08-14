@@ -17,7 +17,7 @@ from detectron2.data import DatasetCatalog
 from detectron2.data.datasets import register_coco_instances
 
 from detector import VisualizationDemo
-# from SendToArduino import closed_connection
+from SendToArduino import closed_connection
 
 WINDOW_NAME = "Bismillah Bisa"
 objectDir = "..\..\dataset"
@@ -120,7 +120,7 @@ if __name__ == "__main__":
             cv2.imshow(WINDOW_NAME, vis)
             if cv2.waitKey(1) == 27:
                 break  # esc to quit
-        # closed_connection()
+        closed_connection()
         cam.release()
         cv2.destroyAllWindows()
 

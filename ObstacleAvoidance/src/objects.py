@@ -52,7 +52,7 @@ class GreenTrafficLight(TrafficObject):
         logging.debug('green light: make no changes')
 
 
-class Bola(TrafficObject):
+class Kerucut(TrafficObject):
     """
     Ekivalen dengan SpeedLimit to 25
     """
@@ -65,7 +65,7 @@ class Bola(TrafficObject):
         # return (car_state)
 
 
-class Kerucut(TrafficObject):
+class Bola(TrafficObject):
     """
     Ekivalen dengan RedLightTraffic
     """

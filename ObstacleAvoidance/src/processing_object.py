@@ -45,12 +45,18 @@ class ObjectsOnRoadProcessor(object):
         self.predictor = None
 
         #
+        '''
+        Mapping Penomoran Label
+        0 = Bola Kasti
+        1 = Kerucut
+        2 = Sarden
+        '''
         self.traffic_objects = {5: GreenTrafficLight(),
-                                1: Bola(140),
-                                0: Kerucut(),
+                                1: Kerucut(140),
+                                0: Bola(),
                                 2: Sarden()}
 
-        self.arahJalan = {0: "mundur",
+        self.arahJalan = {0: "stop",
                           1: "lurus",
                           2: "kanan",
                           3: "kiri"}
@@ -140,8 +146,12 @@ class ObjectsOnRoadProcessor(object):
             processor = self.traffic_objects[label]
             if processor.is_close_by(height, self.height):
                 processor.set_car_state(car_state)
-                self.flagBelok = processor.check_lebar(
-                    topleft, bottomright, self.width)
+                # jika bola kasti maka stop
+                if label == 0:
+                    self.flagBelok = 0
+                else:
+                    self.flagBelok = processor.check_lebar(
+                        topleft, bottomright, self.width)
             else:
                 logging.debug(
                     "[%s] object detected, but it is too far, ignoring. " % label)

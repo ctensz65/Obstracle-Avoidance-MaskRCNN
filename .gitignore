@@ -1,9 +1,7 @@
 # ignore extension
 *.log
-*.png
 *.json
 *.diff
-*.jpg
 *.pyc
 *.pth
 
@@ -13,7 +11,7 @@
 .vscode
 
 configs
-dataset\*
+dataset
 trained_model
 ObstacleAvoidance\src\__pycache__\
 codes\__pycache__\

@@ -14,7 +14,7 @@ from detectron2.config import get_cfg
 
 from detectron2.data.datasets import register_coco_instances
 from processing_object import ObjectsOnRoadProcessor
-# from SendToArduino import write_data
+from SendToArduino import write_data
 
 
 class VisualizationDemo(object):
@@ -151,9 +151,9 @@ class VisualizationDemo(object):
 
             # Send to Arduino
             toArduino = ("<" + arahJalan + ", " + str(speed) + ">")
-            print()
-            print(toArduino)
-            # write_data(toArduino)
+            # print()
+            # print(toArduino)
+            write_data(toArduino)
 
             return vis_frame
 
