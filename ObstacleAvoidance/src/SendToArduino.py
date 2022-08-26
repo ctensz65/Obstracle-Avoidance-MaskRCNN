@@ -6,7 +6,7 @@
 import serial
 import time
 
-arduino = serial.Serial('COM5', baudrate=115200, timeout=.1)
+arduino = serial.Serial('COM8', baudrate=115200, timeout=.1)
 time.sleep(2)
 
 startMarker = 60
