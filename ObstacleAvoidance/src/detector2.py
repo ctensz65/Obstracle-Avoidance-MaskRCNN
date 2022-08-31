@@ -1,3 +1,4 @@
+from cProfile import label
 import cv2
 import torch
 from collections import deque
@@ -38,14 +39,6 @@ class VisualizationDemo(object):
         self.arahJalan = ""
         self.fps = 0
 
-        # initialize open cv for drawing boxes
-        self.font = cv2.FONT_HERSHEY_SIMPLEX
-        self.bottomLeftCornerOfText = (10, height - 10)
-        self.upperLeftCornerOfText = (10, 15)
-        self.fontScale = .5
-        self.fontColor = (255, 255, 255)  # white
-        self.lineType = 1
-
     def _frame_from_video(self, video):
         while video.isOpened():
             success, frame = video.read()
@@ -72,7 +65,7 @@ class VisualizationDemo(object):
 
         return outputs
 
-    def run_on_video(self, video):
+    def run_on_video(self, video, test_metadata):
         """
         Visualizes predictions on frames of the input video.
 
@@ -83,7 +76,7 @@ class VisualizationDemo(object):
         Yields:
             ndarray: BGR visualizations of each video frame.
         """
-        video_visualizer = VideoVisualizer(self.metadata, self.instance_mode)
+        video_visualizer = VideoVisualizer(test_metadata, self.instance_mode)
 
         def process_predictions(frame, predictions):
             frame1 = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -94,13 +87,13 @@ class VisualizationDemo(object):
             self.speed, self.arahJalan = self.processing.process_objects_on_road(
                 frame1, predictions)
 
-            # Text
-            annotate_summary = ("Setpoint: " + str(self.speed))
-
             if "instances" in predictions:
-                predictions = predictions["instances"].to(self.cpu_device)
+                predictions1 = predictions["instances"].to(self.cpu_device)
                 vis_frame = video_visualizer.draw_instance_predictions(
-                    frame1, predictions)
+                    frame1, predictions1)
+
+                label_obj = predictions['instances'].pred_classes.to(
+                    "cpu").numpy()
 
             self.fps = 1/(self.new_frame_time-self.prev_frame_time)
             self.prev_frame_time = self.new_frame_time
@@ -112,13 +105,19 @@ class VisualizationDemo(object):
             # by using putText
             string_fps = (str(self.fps) + " fps")
 
+            try:
+                int_object = label_obj[0]
+                if int_object == 0:
+                    self.object = 'Bola Kasti'
+                elif int_object == 1:
+                    self.object = 'Kerucut'
+                elif int_object == 2:
+                    self.object = 'Sarden'
+            except IndexError:
+                self.object = 'No Object Detected'
+
             # Converts Matplotlib RGB format to OpenCV BGR format
             vis_frame = cv2.cvtColor(vis_frame.get_image(), cv2.COLOR_RGB2BGR)
-            vis_frame = cv2.putText(vis_frame, annotate_summary, self.bottomLeftCornerOfText,
-                                    self.font, self.fontScale, self.fontColor, self.lineType)
-            vis_frame = cv2.putText(
-                vis_frame, string_fps, self.upperLeftCornerOfText, self.font,
-                self.fontScale, self.fontColor, self.lineType)
 
             # Send to Arduino
             toArduino = ("<" + self.arahJalan + ", " + str(self.speed) + ">")
@@ -152,4 +151,4 @@ class VisualizationDemo(object):
                 yield process_predictions(frame, self.predictor(frame))
 
     def data_atribut(self):
-        return self.fps, self.speed, self.arahJalan
+        return self.fps, self.speed, self.arahJalan, self.object

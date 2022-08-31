@@ -1,8 +1,3 @@
-# Importing Libraries
-# <kiri, 140>
-#
-#
-
 import serial
 import time
 

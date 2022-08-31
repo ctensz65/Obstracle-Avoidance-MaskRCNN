@@ -1,5 +1,4 @@
 from glob import glob
-import logging
 import time
 from tkinter import E
 from objects import *
@@ -25,9 +24,6 @@ class ObjectsOnRoadProcessor(object):
                  speed_limit=100,
                  width=640,
                  height=480):
-        # model: This MUST be a tflite model that was specifically compiled for Edge TPU.
-        # https://coral.withgoogle.com/web-compiler/
-        # logging.info('Creating a ObjectsOnRoadProcessor...')
         self.width = width
         self.height = height
         self.arahJalan = ""
@@ -95,28 +91,24 @@ class ObjectsOnRoadProcessor(object):
         [2] Sarden
         """
         instances_label = outputs['instances'].pred_classes
+        label_list = outputs['instances'].pred_classes.to("cpu").numpy()
         # instances_label = instances_label.tolist()
 
-        return instances_label
+        return instances_label, label_list
 
     def process_objects_on_road(self, frame, prediction):
         # Main entry point of the Road Object Handler
-        logging.debug('Processing objects.................................')
         global topleft, bottomright
 
         if frame is not None:
             boxes = self.get_boxes(prediction)
-            label = self.get_labels(prediction)
-        else:
-            logging.debug(
-                'There Is no Frame to Process.................................')
+            label, label_list = self.get_labels(prediction)
 
         if label.nelement() != 0:
             self.heightObj, self.widthObj = self.get_hwframe(prediction)
             topleft, bottomright = self.get_coords(prediction)
 
         self.control_car(boxes, label, self.heightObj)
-        logging.debug('Processing objects END..............................')
 
         arah = self.arahJalan[self.flagBelok]
         # print ("Speed Motor : ", self.speed)
@@ -129,14 +121,11 @@ class ObjectsOnRoadProcessor(object):
                     ):
         global topleft, bottomright
 
-        logging.debug('Control car...')
         car_state = {"speed": self.speed_limit,
                      "speed_limit": self.speed_limit}
 
         if len(boxes) == 0:
             self.flagBelok = 1
-            logging.debug(
-                'No objects detected, drive at speed limit of %s.' % self.speed_limit)
 
         contain_stop_sign = False
 
@@ -152,9 +141,7 @@ class ObjectsOnRoadProcessor(object):
                 else:
                     self.flagBelok = processor.check_lebar(
                         topleft, bottomright, self.width)
-            else:
-                logging.debug(
-                    "[%s] object detected, but it is too far, ignoring. " % label)
+
             if label == '2':
                 contain_stop_sign = True
 
@@ -168,9 +155,5 @@ class ObjectsOnRoadProcessor(object):
         self.speed_limit = car_state['speed_limit']
         self.speed = car_state['speed']
 
-        logging.debug('Current Speed = %d, New Speed = %d' %
-                      (old_speed, self.speed))
-
         if self.speed == 0:
-            logging.debug('full stop for 1 seconds')
             time.sleep(1)

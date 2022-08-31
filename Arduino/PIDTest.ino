@@ -10,26 +10,33 @@
 /* =========================================== */
 /* PIN OUT ARDUINO */
 /* =========================================== */
-/* Pins Motor Kiri */
-#define ENCA 21
-#define ENCB 19
-#define PWMA 5
-#define IN1 6
-#define IN2 7
+/* Pins M1 */
+#define   ENCA    21
+#define   ENCB    19
+#define   PWMA    5
+#define   IN1     6
+#define   IN2     7
 
-/* Pins Motor Kanan */
-#define ENCC 20
-#define ENCD 18
-#define PWMB 8
-#define IN3 9
-#define IN4 10
+/* Pins M2 */
+#define   ENCC    20
+#define   ENCD    18
+#define   PWMB    8
+#define   IN3     9
+#define   IN4     10
 
-#define   PWMC   22
-#define   PWMD  23
-#define   IN5   24
-#define   IN6   25
-#define   IN7   26
-#define   IN8   27
+/* Pins M3 */
+#define   ENC3_A  3
+#define   ENC3_B  4
+#define   PWMC    23
+#define   IN5     25
+#define   IN6     27
+
+/* Pins M4 */
+#define   ENC4_A  2
+#define   ENC4_B  14
+#define   PWMD    33
+#define   IN7     29
+#define   IN8     31
 
 #define NMOTOR 2
 
@@ -115,19 +122,25 @@ void setup() {
                   readEncoderM2,RISING);
 
   /* MOTOR RIGHT M3 */
-//  pinMode(ENCA,INPUT);
-//  pinMode(ENCB,INPUT);
+  pinMode(ENC3_A,INPUT);
+  pinMode(ENC3_B,INPUT);
   pinMode(PWMC,OUTPUT);
   pinMode(IN5,OUTPUT);
   pinMode(IN6,OUTPUT);
 
+  attachInterrupt(digitalPinToInterrupt(ENC3_A),
+                  readEncoderM2,RISING);
+                  
   /* MOTOR RIGHT M4 */
-//  pinMode(ENCA,INPUT);
-//  pinMode(ENCB,INPUT);
+  pinMode(ENC4_A,INPUT);
+  pinMode(ENC4_B,INPUT);
   pinMode(PWMD,OUTPUT);
   pinMode(IN7,OUTPUT);
   pinMode(IN8,OUTPUT);
-  
+
+  attachInterrupt(digitalPinToInterrupt(ENC4_A),
+                  readEncoderM2,RISING);
+                  
   setMotorStop();
 }
 

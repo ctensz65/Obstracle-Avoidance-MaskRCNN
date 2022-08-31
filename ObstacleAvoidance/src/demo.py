@@ -10,7 +10,6 @@ import random
 import matplotlib.pyplot as plt
 
 from detectron2.config import get_cfg
-from detectron2.data.detection_utils import read_image
 from detectron2.utils.logger import setup_logger
 
 from detectron2.data import DatasetCatalog
