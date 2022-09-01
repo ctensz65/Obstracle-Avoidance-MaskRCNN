@@ -1,20 +1,25 @@
-from cProfile import label
 import cv2
 import torch
 from collections import deque
 import time
 
-from detectron2.data import MetadataCatalog, DatasetCatalog
 from detectron2.engine.defaults import DefaultPredictor
 from detectron2.utils.video_visualizer import VideoVisualizer
 from detectron2.utils.visualizer import ColorMode, Visualizer
+from detectron2.config import get_cfg
+from detectron2.data import MetadataCatalog, DatasetCatalog
+from detectron2.data.datasets import register_coco_instances
+
 
 from processing_object import ObjectsOnRoadProcessor
-from SendToArduino import write_data
+
+pathdataset = "..\..\dataset"
+model_path = "model_final_ske2.pth"
+config_path = "..\..\configs\COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml"
 
 
 class VisualizationDemo(object):
-    def __init__(self, cfg, instance_mode=ColorMode.IMAGE, parallel=False, height=480, speedlimit=100):
+    def __init__(self, instance_mode=ColorMode.IMAGE, parallel=False, height=480, speedlimit=100):
         """
         Args:
             cfg (CfgNode):
@@ -26,11 +31,11 @@ class VisualizationDemo(object):
         self.cpu_device = torch.device("cpu")
         self.instance_mode = instance_mode
 
-        self.cfg = cfg
+        # self.cfg = cfg
         self.processing = ObjectsOnRoadProcessor(self, speed_limit=speedlimit)
 
         self.parallel = parallel
-        self.predictor = DefaultPredictor(cfg)
+        # self.predictor = DefaultPredictor(self.cfg)
 
         self.new_frame_time = 0
         self.prev_frame_time = 0
@@ -38,6 +43,39 @@ class VisualizationDemo(object):
         self.speed = 0
         self.arahJalan = ""
         self.fps = 0
+
+    def get_model(self, nobject, threshold):
+        cfg = get_cfg()
+        cfg.merge_from_file(config_path)
+        cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = threshold
+        cfg.MODEL.WEIGHTS = model_path
+        cfg.DATASETS.TEST = ("Components_val", )
+        cfg.MODEL.ROI_HEADS.NUM_CLASSES = nobject
+        cfg.freeze()
+
+        return cfg
+
+    def get_predict(self, nobject, threshold):
+        cfg = self.get_model(nobject, threshold)
+
+        self.predictor = DefaultPredictor(cfg)
+
+    def register_dataset(self):
+        dataset_train = 'Components_train'
+        dataset_val = 'Components_val'
+
+        if dataset_train in DatasetCatalog.list():
+            DatasetCatalog.remove(dataset_train)
+            flagtrain = True
+
+        if dataset_val in DatasetCatalog.list():
+            DatasetCatalog.remove(dataset_val)
+
+        for d in ["train", "val"]:
+            register_coco_instances(
+                f"Components_{d}", {}, f"{pathdataset}/{d}.json", f"{pathdataset}/{d}")
+
+        return flagtrain
 
     def _frame_from_video(self, video):
         while video.isOpened():
@@ -65,7 +103,7 @@ class VisualizationDemo(object):
 
         return outputs
 
-    def run_on_video(self, video, test_metadata):
+    def run_on_video(self, video):
         """
         Visualizes predictions on frames of the input video.
 
@@ -76,7 +114,7 @@ class VisualizationDemo(object):
         Yields:
             ndarray: BGR visualizations of each video frame.
         """
-        video_visualizer = VideoVisualizer(test_metadata, self.instance_mode)
+        video_visualizer = VideoVisualizer(self.metadata, self.instance_mode)
 
         def process_predictions(frame, predictions):
             frame1 = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -120,10 +158,10 @@ class VisualizationDemo(object):
             vis_frame = cv2.cvtColor(vis_frame.get_image(), cv2.COLOR_RGB2BGR)
 
             # Send to Arduino
-            toArduino = ("<" + self.arahJalan + ", " + str(self.speed) + ">")
+            # toArduino = ("<" + self.arahJalan + ", " + str(self.speed) + ">")
             # print()
             # print(toArduino)
-            write_data(toArduino)
+            # write_data(toArduino)
 
             return vis_frame
 
