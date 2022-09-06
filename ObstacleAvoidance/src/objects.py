@@ -34,10 +34,10 @@ class TrafficObject(object):
         # print(distanceRight)
 
         if distanceLeft > distanceRight:
-            arahJalan = 3
+            arahJalan = 2
             return arahJalan
         elif distanceLeft < distanceRight:
-            arahJalan = 2
+            arahJalan = 3
             return arahJalan
         else:
             arahJalan = 1

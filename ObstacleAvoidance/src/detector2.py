@@ -2,6 +2,7 @@ import cv2
 import torch
 from collections import deque
 import time
+import numpy as np
 
 from detectron2.engine.defaults import DefaultPredictor
 from detectron2.utils.video_visualizer import VideoVisualizer
@@ -28,6 +29,7 @@ class VisualizationDemo(object):
                 Useful since the visualization logic can be slow.
         """
         self.metadata = MetadataCatalog.get("Components_train")
+        # self.datasetdict = DatasetCatalog.get("Components_train")
         self.cpu_device = torch.device("cpu")
         self.instance_mode = instance_mode
 
@@ -66,7 +68,6 @@ class VisualizationDemo(object):
 
         if dataset_train in DatasetCatalog.list():
             DatasetCatalog.remove(dataset_train)
-            flagtrain = True
 
         if dataset_val in DatasetCatalog.list():
             DatasetCatalog.remove(dataset_val)
@@ -75,7 +76,8 @@ class VisualizationDemo(object):
             register_coco_instances(
                 f"Components_{d}", {}, f"{pathdataset}/{d}.json", f"{pathdataset}/{d}")
 
-        return flagtrain
+        datasetdict = DatasetCatalog.get("Components_train")
+        return datasetdict
 
     def _frame_from_video(self, video):
         while video.isOpened():
@@ -93,15 +95,6 @@ class VisualizationDemo(object):
         vis_output = visualizer.draw_dataset_dict(frame)
 
         return vis_output
-
-    def get_rawpredict(self, video):
-        """
-        Untuk mengambil raw prediction
-        """
-        frame = self._frame_from_video(video)
-        outputs = self.predictor(frame)
-
-        return outputs
 
     def run_on_video(self, video):
         """
@@ -133,6 +126,9 @@ class VisualizationDemo(object):
                 label_obj = predictions['instances'].pred_classes.to(
                     "cpu").numpy()
 
+                pred_boxes = predictions['instances'].pred_boxes.tensor.cpu(
+                ).numpy()
+
             self.fps = 1/(self.new_frame_time-self.prev_frame_time)
             self.prev_frame_time = self.new_frame_time
 
@@ -144,6 +140,12 @@ class VisualizationDemo(object):
             string_fps = (str(self.fps) + " fps")
 
             try:
+                self.Objwidth = pred_boxes[0][2] - pred_boxes[0][0]
+                self.Objheight = pred_boxes[0][3] - pred_boxes[0][1]
+
+                self.Objwidth = float("{:.2f}".format(self.Objwidth))
+                self.Objheight = float("{:.2f}".format(self.Objheight))
+
                 int_object = label_obj[0]
                 if int_object == 0:
                     self.object = 'Bola Kasti'
@@ -151,8 +153,13 @@ class VisualizationDemo(object):
                     self.object = 'Kerucut'
                 elif int_object == 2:
                     self.object = 'Sarden'
+
+                self.center_coor = self.compute_center(pred_boxes)
             except IndexError:
                 self.object = 'No Object Detected'
+                self.center_coor = 'None'
+                self.Objwidth = 'None'
+                self.Objheight = 'None'
 
             # Converts Matplotlib RGB format to OpenCV BGR format
             vis_frame = cv2.cvtColor(vis_frame.get_image(), cv2.COLOR_RGB2BGR)
@@ -189,4 +196,33 @@ class VisualizationDemo(object):
                 yield process_predictions(frame, self.predictor(frame))
 
     def data_atribut(self):
-        return self.fps, self.speed, self.arahJalan, self.object
+        return self.fps, self.speed, self.arahJalan, self.object, self.Objheight, self.Objwidth, self.center_coor
+
+    def compute_center(self, bounding_boxes):
+        # type: (np.ndarray) -> np.ndarray
+        """
+        Computes the bounding box centers given the bounding boxes.
+        Args:
+            bounding_boxes: numpy array containing two diagonal corner coordinates of the bounding boxes,
+            shape [num_bounding_boxes, 4]
+        Returns:
+            centers_3d: numpy array of the bounding box centers, shape [num_bounding_boxes, 3]
+        """
+        x_dist = bounding_boxes[:, 2] - bounding_boxes[:, 0]
+        y_dist = bounding_boxes[:, 3] - bounding_boxes[:, 1]
+        centers = bounding_boxes[:, 0:2] + 0.5 * \
+            np.stack((x_dist, y_dist), axis=1)
+        centers_3d = self.add_z_coordinate(centers)
+        return centers_3d
+
+    def add_z_coordinate(self, centers):
+        # type: (np.ndarray) -> np.ndarray
+        """
+        Adds a dummy 0. z-coordinate to the object centers.
+        Could be replaced with some depth estimation algorithm in the future.
+        Args:
+            centers: 2d coordinates for the observed bounding box centers, shape [num_centers, 2]
+        :return:
+            3d coordinates for the observed bounding box centers, shape [num_centers, 2]
+        """
+        return np.concatenate((centers, np.zeros(shape=(centers.shape[0], 1))), axis=1)
