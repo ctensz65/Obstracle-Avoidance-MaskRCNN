@@ -249,7 +249,7 @@ def webcam():
         'Jumlah Objek', min_value=1, max_value=5, value=3)
 
     kecepatan_awal = st.sidebar.slider(
-        'Kecepatan Konstan', min_value=80, max_value=110, value=100)
+        'Kecepatan Normal', min_value=80, max_value=110, value=100)
 
     kpi1_text, kpi2_text, kpi3_text, kpi4_text, kpi5_text, x1_text, y1_text, x2_text, y2_text, score_text = initialize_atribut()
 
@@ -263,10 +263,11 @@ def webcam():
 
     columns = st.sidebar.columns((1, 1, 1))
     validate = columns[1].button('Validate Dataset', key='validatedataset')
+    st.sidebar.markdown('---------')
     if validate:
         kecepatan_awal = int(kecepatan_awal)
         demo = VisualizationDemo(speedlimit=kecepatan_awal)
-        dataset_dict = demo.register_dataset()
+        dataset_dict, metadata_obj = demo.register_dataset()
 
         img1, img2, img3 = st.columns(3)
 
@@ -290,6 +291,23 @@ def webcam():
             if cntr == 3:
                 with img3:
                     st.pyplot(fig)
+
+        objList = metadata_obj.get("thing_classes")
+        # st.sidebar.markdown(metadata_obj.get("thing_classes"))
+
+        objCol = st.sidebar.columns((1, 1, 1))
+        objCol[1].write(
+            f"<h3 style='text-align: center; '>List Objects</h3>", unsafe_allow_html=True)
+
+        objCol2 = st.sidebar.columns((1, 1, 1))
+        objCol2[0].caption(
+            f"<h3 style='text-align: center; color:yellow; '>{objList[0]}</h3>", unsafe_allow_html=True)
+
+        objCol2[1].caption(
+            f"<h3 style='text-align: center; color:yellow; '>{objList[1]}</h3>", unsafe_allow_html=True)
+
+        objCol2[2].caption(
+            f"<h3 style='text-align: center; color:yellow; '>{objList[2]}</h3>", unsafe_allow_html=True)
 
         dataset_warn.empty()
 
@@ -317,10 +335,12 @@ def webcam():
         def store_stop():
             arduino.closed_connection()
             main_button.empty()
+            st.success(
+                'Engine has been stopped, refresh page to turn on back the engine')
 
         def write_atributs():
             global speed, arahJalan
-            fps, speed, arahJalan, label, Objheight, Objwidth, center_coor = demo.data_atribut()
+            fps, speed, arahJalan, label, Objheight, Objwidth, center_coor, pred_score = demo.data_atribut()
 
             kpi1_text.write(
                 f"<h3 style='text-align: center; color:yellow; '>{fps}</h3>", unsafe_allow_html=True)
@@ -348,6 +368,9 @@ def webcam():
 
             x2_text.write(
                 f"<h3 style='text-align: center; color:yellow; '>{center_coor}</h3>", unsafe_allow_html=True)
+
+            score_text.write(
+                f"<h3 style='text-align: center; color:yellow; '>{pred_score}</h3>", unsafe_allow_html=True)
 
         stoplur = main_button.button(
             'STOP ENGINE', key='stopmang', on_click=store_stop)

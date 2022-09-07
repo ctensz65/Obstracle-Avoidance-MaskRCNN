@@ -1,3 +1,4 @@
+from tkinter import Y
 import cv2
 import torch
 from collections import deque
@@ -77,7 +78,7 @@ class VisualizationDemo(object):
                 f"Components_{d}", {}, f"{pathdataset}/{d}.json", f"{pathdataset}/{d}")
 
         datasetdict = DatasetCatalog.get("Components_train")
-        return datasetdict
+        return datasetdict, self.metadata
 
     def _frame_from_video(self, video):
         while video.isOpened():
@@ -129,6 +130,8 @@ class VisualizationDemo(object):
                 pred_boxes = predictions['instances'].pred_boxes.tensor.cpu(
                 ).numpy()
 
+                pred_scores = predictions['instances'].scores.to("cpu").numpy()
+
             self.fps = 1/(self.new_frame_time-self.prev_frame_time)
             self.prev_frame_time = self.new_frame_time
 
@@ -146,6 +149,9 @@ class VisualizationDemo(object):
                 self.Objwidth = float("{:.2f}".format(self.Objwidth))
                 self.Objheight = float("{:.2f}".format(self.Objheight))
 
+                pred_scores.astype(int)
+                self.score = '{:.0%}'.format(pred_scores[0] / 1)
+
                 int_object = label_obj[0]
                 if int_object == 0:
                     self.object = 'Bola Kasti'
@@ -155,11 +161,21 @@ class VisualizationDemo(object):
                     self.object = 'Sarden'
 
                 self.center_coor = self.compute_center(pred_boxes)
+                self.center_coor.astype(int)
+
+                x = "{:.1f}".format(self.center_coor[0][0])
+                y = "{:.1f}".format(self.center_coor[0][1])
+                z = "{:.1f}".format(self.center_coor[0][2])
+
+                self.center_coor = ("X:" + str(x) + " Y:" +
+                                    str(y) + " Z:" + str(z))
+
             except IndexError:
                 self.object = 'No Object Detected'
                 self.center_coor = 'None'
                 self.Objwidth = 'None'
                 self.Objheight = 'None'
+                self.score = 'None'
 
             # Converts Matplotlib RGB format to OpenCV BGR format
             vis_frame = cv2.cvtColor(vis_frame.get_image(), cv2.COLOR_RGB2BGR)
@@ -196,7 +212,7 @@ class VisualizationDemo(object):
                 yield process_predictions(frame, self.predictor(frame))
 
     def data_atribut(self):
-        return self.fps, self.speed, self.arahJalan, self.object, self.Objheight, self.Objwidth, self.center_coor
+        return self.fps, self.speed, self.arahJalan, self.object, self.Objheight, self.Objwidth, self.center_coor, self.score
 
     def compute_center(self, bounding_boxes):
         # type: (np.ndarray) -> np.ndarray

@@ -20,6 +20,7 @@ from detectron2.data.datasets import register_coco_instances
 from predictor import VisualizationDemo
 
 WINDOW_NAME = "Bismillah Bisa"
+objectDir = "..\..\dataset"
 
 
 def setup_cfg(args):
@@ -42,7 +43,7 @@ def get_parser():
         description="Detect objects from webcam images")
     parser.add_argument(
         "--config-file",
-        default="../detectron2/configs/COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml",
+        default="..\configs\COCO-InstanceSegmentation\mask_rcnn_R_50_FPN_3x.yaml",
         metavar="FILE",
         help="path to config file",
     )
@@ -64,8 +65,9 @@ def get_parser():
         help="Minimum score for instance predictions to be shown",
     )
     parser.add_argument(
-        "--opts",
-        help="Modify config options using the command-line 'KEY VALUE' pairs",
+        "--model",
+        default="..\trained_model\model_final_ske2.pth",
+        help="Trained model yang hendak di load",
         metavar="FILE",
     )
     return parser
@@ -97,7 +99,7 @@ if __name__ == "__main__":
 
     for d in ["train", "val"]:
         register_coco_instances(f"Components_{d}", {
-        }, f"..\custom-datasets\Skenario2\{d}.json", f"..\custom-datasets\Skenario2\{d}")
+        }, f"{objectDir}/{d}.json", f"{objectDir}/{d}")
     dataset_dicts = DatasetCatalog.get("Components_train")
     cfg = setup_cfg(args)
 
@@ -105,7 +107,6 @@ if __name__ == "__main__":
 
     if args.webcam:
         cam = cv2.VideoCapture(0)
-        # cam = cv2.VideoCapture('http://Cartensz-PC.local:8000/camera/mjpeg?type=.mjpg')
         for vis in tqdm.tqdm(demo.run_on_video(cam)):
             cv2.namedWindow(WINDOW_NAME, cv2.WINDOW_NORMAL)
             cv2.imshow(WINDOW_NAME, vis)
