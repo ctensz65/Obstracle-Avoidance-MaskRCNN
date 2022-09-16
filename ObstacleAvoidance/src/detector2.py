@@ -21,7 +21,7 @@ config_path = "..\..\configs\COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yam
 
 
 class VisualizationDemo(object):
-    def __init__(self, instance_mode=ColorMode.IMAGE, parallel=False, height=480, speedlimit=100):
+    def __init__(self, instance_mode=ColorMode.IMAGE, parallel=False, height=480, speedlimit=150):
         """
         Args:
             cfg (CfgNode):

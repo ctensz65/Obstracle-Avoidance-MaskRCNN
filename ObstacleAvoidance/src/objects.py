@@ -30,9 +30,6 @@ class TrafficObject(object):
         distanceLeft = abs(0 - objXleft)
         distanceRight = frame_width - objXright
 
-        # print(distanceLeft)
-        # print(distanceRight)
-
         if distanceLeft > distanceRight:
             arahJalan = 2
             return arahJalan
@@ -43,18 +40,10 @@ class TrafficObject(object):
             arahJalan = 1
             return arahJalan
 
-        # print(frame_width)
-
-
-class GreenTrafficLight(TrafficObject):
-
-    def set_car_state(self, car_state):
-        logging.debug('green light: make no changes')
-
 
 class Kerucut(TrafficObject):
     """
-    Ekivalen dengan SpeedLimit to 25
+    Ekivalen dengan SpeedLimit to 200
     """
 
     def __init__(self, speed_limit):
@@ -62,7 +51,6 @@ class Kerucut(TrafficObject):
 
     def set_car_state(self, car_state):
         car_state['speed'] = self.speed_limit
-        # return (car_state)
 
 
 class Bola(TrafficObject):
@@ -76,6 +64,13 @@ class Bola(TrafficObject):
 
 
 class Sarden(TrafficObject):
+    def __init__(self, speed_limit):
+        self.speed_limit = speed_limit
+
+    def set_car_state(self, car_state):
+        car_state['speed'] = self.speed_limit
+
+class Kacamata(TrafficObject):
     """
     Stop Sign object would wait
     """

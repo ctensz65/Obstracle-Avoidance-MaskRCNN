@@ -345,8 +345,15 @@ def webcam():
             kpi1_text.write(
                 f"<h3 style='text-align: center; color:yellow; '>{fps}</h3>", unsafe_allow_html=True)
 
-            kpi2_text.write(
-                f"<h3 style='text-align: center; color:red; '>{arahJalan}</h3>", unsafe_allow_html=True)
+            if arahJalan == 'kiri':
+                kpi2_text.write(
+                    f"<h3 style='text-align: center; color:red; '>kanan</h3>", unsafe_allow_html=True)
+            elif arahJalan == 'kanan':
+                kpi2_text.write(
+                    f"<h3 style='text-align: center; color:red; '>kiri</h3>", unsafe_allow_html=True)
+            else:
+                kpi2_text.write(
+                    f"<h3 style='text-align: center; color:red; '>{arahJalan}</h3>", unsafe_allow_html=True)
 
             kpi3_text.write(
                 f"<h3 style='text-align: center; color:red; '>{speed}</h3>", unsafe_allow_html=True)

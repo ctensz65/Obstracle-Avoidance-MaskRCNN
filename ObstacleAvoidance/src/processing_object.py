@@ -47,15 +47,16 @@ class ObjectsOnRoadProcessor(object):
         1 = Kerucut
         2 = Sarden
         '''
-        self.traffic_objects = {5: GreenTrafficLight(),
-                                1: Kerucut(140),
+        self.traffic_objects = {1: Kerucut(200),
                                 0: Bola(),
-                                2: Sarden()}
+                                2: Sarden(100),
+                                3: Kacamata()}
 
         self.arahJalan = {0: "stop",
                           1: "lurus",
                           2: "kanan",
-                          3: "kiri"}
+                          3: "kiri",
+                          4: "mundur"}
 
     def get_boxes(self, outputs):
         pred_boxes = outputs["instances"].pred_boxes.tensor.cpu().numpy()
@@ -142,11 +143,11 @@ class ObjectsOnRoadProcessor(object):
                     self.flagBelok = processor.check_lebar(
                         topleft, bottomright, self.width)
 
-            if label == '2':
+            if label == '3':
                 contain_stop_sign = True
 
         if not contain_stop_sign:
-            self.traffic_objects[2].clear()
+            self.traffic_objects[3].clear()
 
         self.resume_driving(car_state)
 
