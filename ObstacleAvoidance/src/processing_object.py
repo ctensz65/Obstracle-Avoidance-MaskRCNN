@@ -47,21 +47,34 @@ class ObjectsOnRoadProcessor(object):
         1 = Kerucut
         2 = Sarden
         '''
-        self.traffic_objects = {1: Kerucut(200),
+        self.traffic_objects = {1: Kerucut(255),
                                 0: Bola(),
-                                2: Sarden(100),
+                                2: Sarden(255),
                                 3: Kacamata()}
 
         self.arahJalan = {0: "stop",
                           1: "lurus",
                           2: "kanan",
                           3: "kiri",
-                          4: "mundur"}
+                          4: "mundur",
+                          5: "mundur_kiri",
+                          6: "mundur_kanan"}
 
     def get_boxes(self, outputs):
         pred_boxes = outputs["instances"].pred_boxes.tensor.cpu().numpy()
 
         return pred_boxes
+
+    def get_center(self, outputs):
+        instances_pred_boxes = outputs["instances"].pred_boxes.tensor.cpu(
+        ).numpy()
+
+        x_dist = instances_pred_boxes[:, 2] - instances_pred_boxes[:, 0]
+        y_dist = instances_pred_boxes[:, 3] - instances_pred_boxes[:, 1]
+        centers = instances_pred_boxes[:, 0:2] + \
+            0.5 * np.stack((x_dist, y_dist), axis=1)
+
+        return centers
 
     def get_coords(self, outputs):
         """
@@ -99,7 +112,7 @@ class ObjectsOnRoadProcessor(object):
 
     def process_objects_on_road(self, frame, prediction):
         # Main entry point of the Road Object Handler
-        global topleft, bottomright
+        global topleft, bottomright, center_coord
 
         if frame is not None:
             boxes = self.get_boxes(prediction)
@@ -108,6 +121,7 @@ class ObjectsOnRoadProcessor(object):
         if label.nelement() != 0:
             self.heightObj, self.widthObj = self.get_hwframe(prediction)
             topleft, bottomright = self.get_coords(prediction)
+            center_coord = self.get_center(prediction)
 
         self.control_car(boxes, label, self.heightObj)
 
@@ -120,7 +134,7 @@ class ObjectsOnRoadProcessor(object):
                     label,
                     height
                     ):
-        global topleft, bottomright
+        global topleft, bottomright, centercoord
 
         car_state = {"speed": self.speed_limit,
                      "speed_limit": self.speed_limit}
@@ -139,6 +153,9 @@ class ObjectsOnRoadProcessor(object):
                 # jika bola kasti maka stop
                 if label == 0:
                     self.flagBelok = 0
+                elif label == 2:
+                    self.flagBelok = processor.check_mundur(
+                        centercoord, self.width)
                 else:
                     self.flagBelok = processor.check_lebar(
                         topleft, bottomright, self.width)

@@ -9,6 +9,8 @@ import serial
 from PIL import Image
 import matplotlib.pyplot as plt
 import random
+import xlsxwriter
+from io import BytesIO
 
 # from detectron2.engine import DefaultPredictor
 from detectron2.config import get_cfg
@@ -63,20 +65,20 @@ class ArduinoComm(object):
     def write_data(self, value):
         waitingForReply = False
         if self.arduino.isOpen():
-            if waitingForReply == False:
-                self.sendToArduino(value)
-                print("\nSent from PC " + value)
-                waitingForReply = True
+            # if waitingForReply == False:
+            self.sendToArduino(value)
+            print("\nSent from PC " + value)
+            # waitingForReply = True
 
-            if waitingForReply == True:
-                while self.arduino.inWaiting() == 0:
-                    pass
+            # if waitingForReply == True:
+            #     while self.arduino.inWaiting() == 0:
+            #         pass
 
-                dataRecvd = self.recvFromArduino()
-                print("Reply Received " + dataRecvd)
-                waitingForReply = False
+            # dataRecvd = self.recvFromArduino()
+            # print("Reply Received " + dataRecvd)
+            # waitingForReply = False
 
-                print("===========")
+            # print("===========")
 
             time.sleep(0.1)
         else:
@@ -143,9 +145,101 @@ def ResizeWithAspectRatio(image, width=None, height=None, inter=cv2.INTER_AREA):
 
 
 def welcome():
-    st.markdown('App Made using **Detectron2** & **Pytorch**')
+    image1 = Image.open(
+        r"C:\Users\neils\detectron2\InstanceSegmentation\photos_colab\rover3.jpg")
+    image2 = Image.open(
+        r"C:\Users\neils\detectron2\InstanceSegmentation\photos_colab\rover4.jpg")
+    image3 = Image.open(
+        r"C:\Users\neils\detectron2\InstanceSegmentation\photos_colab\rover5.jpg")
+    col1, col2 = st.columns((1, 1))
 
-    st.markdown('OYOYY')
+    with col1:
+        st.image(image3, caption='Rover Tampak Depan Samping')
+
+    with col1:
+        st.text("")
+        st.text("")
+        st.text("")
+        st.text("")
+        st.text("")
+        st.text("")
+        st.text("")
+
+        st.write("""
+                Training Kit Sistem Deteksi Objek menggunakan metode image segmentation dengan  algoritma Mask R-CNN. \
+                Terdapat dua komponen utama pada Training Kit yaitu Obstracle Avoidance Rover yang merupakan wahana fisik dan Rover Monitoring App yang dibangun berlandaskan sistem deteksi objek tersebut.
+            """)
+
+        st.write("""
+                Secara singkat, alur proses berawal dari tahap anotasi gambar yang akan digunakan dalam training mode object detection. \
+                Selanjutnya, proses training model Mask R-CNN menggunakan framework Detectron2 dan Pytorch yang dapat dijalankan melalui Notebook Google Colab.        
+            """)
+
+        st.markdown(
+            '##### [Unduh Google Colab Notebook Praktikum](https://colab.research.google.com/drive/1x9uygH7Mh-SoBVS1a_uMOnngfDZ6-0q8?usp=sharing)')
+
+    with col2:
+        st.image(image2, caption='Rover Tampak Belakang Samping')
+        st.image(image1, caption='Rover Tampak Samping')
+
+    st.markdown('---------')
+
+    st.subheader('Mask R-CNN')
+
+    # gambar
+    st.markdown(
+        "![Alt Text](https://softscients.com/wp-content/uploads/2021/04/Mask-R-CNN-for-Instance-Segmentation.png)")
+
+    # image1 = Image.open('mask_rcnn.png')
+    # st.image(image1)
+
+    st.write("""
+                Algoritma artificial neural network yang diimplementasikan dalam image processing pada praktikum ini adalah Mask Region Convolutional Neutal Network. \
+                Mask- R-CNN diperuntukkan secara khusus untuk segmentasi citra. \
+                Arsitektur Mask R-CNN dibangun berlandaskan pendahulunya yaitu Faster R-CNN. \
+                Objek yang berhasil dideteksi akan diberikan bounding box dan masking pada setiap instances nya. \
+                Mask R-CNN mudah dalam melakukan training terhadap instances. \
+                Selain itu, performa yang dihasilkan cukup baik pada single-model entries untuk setiap tugas.
+                """)
+
+    st.markdown('---------')
+
+    st.subheader('Detectron2')
+
+    st.markdown(
+        "![Alt Text](https://curiousily.com/static/dff66fd0972574ae284f7df9533d369f/3e3fe/detectron2-logo.png)")
+
+    # image1 = Image.open('mask_rcnn.png')
+    # st.image(image1)
+
+    st.write("""
+                Terdapat beragam framework atau libraries yang mendukung proses pelatihan dan visualisasi model Mask R-CNN. \
+                Salah satunya yaitu Detectron2 yang diciptakan oleh tim riset Artificial Intelligence Facebook. \
+                Detectron2 mendukung implementasi algoritma object detection seperti Mask R-CNN. \
+                Kelebihan yang diperoleh yaitu penggunaan libraries secara penuh dan gratis. \
+                Training pipelines pada Detectron2 sepenuhnya memanfaatkan GPU sehingga diperoleh kecepatan dan skalabilitas yang baik. \
+                Mask-RCNN mendukung instance segmentation mask yang merupakan poin pokok dalam rangkaian praktik pada lab sheet. 
+            """)
+
+    st.markdown('---------')
+
+    st.subheader('Google Colab')
+
+    st.markdown(
+        "![Alt Text](https://miro.medium.com/max/776/1*Lad06lrjlU9UZgSTHUoyfA.png)")
+
+    # image1 = Image.open('mask_rcnn.png')
+    # st.image(image1)
+
+    st.write("""
+                Colab adalah istilah lain dari Google Colaboratory yang merupakan cloud service berbasis Jupyter Notebook. \
+                Colab dikembangkan guna mendukung pembelajaran maupun riset terhadap machine learning. \
+                Keuntungan yang diperoleh yaitu salah satunya akses gratis terhadap GPU. \
+                GPU dapat mengakselerasi kegiatan atau proses deep learning dengan performa yang mumpuni. \
+                Komputer virtual dilengkapi dengan kemampuan pengolahan data yang memadai dan sedernaha untuk digunakan. \
+                Secara dominan, Colab menyediakan platform antarmuka untuk pemrograman Python tanpa memerlukan proses instalasi atau pengaturan yang rumit. \
+                Terdapat modul Python bawaan yang telah terinstalasi seperti Numpy dan OpenCV sehingga pengguna dapat memanfaatkan secara langsung untuk pemrosesan pengolahan citra.
+            """)
 
     st.markdown(
         """
@@ -249,7 +343,7 @@ def webcam():
         'Jumlah Objek', min_value=1, max_value=5, value=3)
 
     kecepatan_awal = st.sidebar.slider(
-        'Kecepatan Normal', min_value=80, max_value=110, value=100)
+        'Kecepatan Normal', min_value=150, max_value=200, value=150)
 
     kpi1_text, kpi2_text, kpi3_text, kpi4_text, kpi5_text, x1_text, y1_text, x2_text, y2_text, score_text = initialize_atribut()
 
@@ -301,19 +395,29 @@ def webcam():
 
         objCol2 = st.sidebar.columns((1, 1, 1))
         objCol2[0].caption(
-            f"<h3 style='text-align: center; color:yellow; '>{objList[0]}</h3>", unsafe_allow_html=True)
+            f"<h2 style='text-align: center; color:yellow; '>{objList[0]}</h3>", unsafe_allow_html=True)
 
         objCol2[1].caption(
-            f"<h3 style='text-align: center; color:yellow; '>{objList[1]}</h3>", unsafe_allow_html=True)
+            f"<h2 style='text-align: center; color:yellow; '>{objList[1]}</h3>", unsafe_allow_html=True)
 
         objCol2[2].caption(
-            f"<h3 style='text-align: center; color:yellow; '>{objList[2]}</h3>", unsafe_allow_html=True)
+            f"<h2 style='text-align: center; color:yellow; '>{objList[2]}</h3>", unsafe_allow_html=True)
 
         dataset_warn.empty()
 
     start_text = '    START ENGINE    '
 
     if main_button.button(start_text, key='start'):
+        fpsData = []
+        speedData = []
+        arahData = []
+        labelData = []
+        heightData = []
+        widthData = []
+        centerData = []
+        scoreData = []
+        timeStamp = []
+
         cam_warning = st.warning("Starting Camera, hold on .....")
         cam = cv2.VideoCapture(0)
         width = int(cam.get(cv2.CAP_PROP_FRAME_WIDTH))
@@ -324,23 +428,84 @@ def webcam():
             "Loading Mask RCNN Model, hold on .....")
         kecepatan_awal = int(kecepatan_awal)
         demo = VisualizationDemo(speedlimit=kecepatan_awal)
-        dataset_dict = demo.register_dataset()
+        dataset_dict, metadata_obj = demo.register_dataset()
         demo.get_predict(jumlah_objek, detection_confidence)
 
         kecepatan_awal = int(kecepatan_awal)
+        objList = metadata_obj.get("thing_classes")
+
+        obj0_text = f"<center>{objList[0]} as stop sign</center>"
+        st.sidebar.caption(obj0_text, unsafe_allow_html=True)
+
+        obj1_text = f"<center>{objList[1]} as object to be avoid left or rigth</center>"
+        st.sidebar.caption(obj1_text, unsafe_allow_html=True)
+
+        obj2_text = f"<center>{objList[2]} as object to be avoid backwards</center>"
+        st.sidebar.caption(obj2_text, unsafe_allow_html=True)
+
         weight_warning.empty()
 
         arduino.flush_board()
 
         def store_stop():
+            output = BytesIO()
+
+            workbook = xlsxwriter.Workbook(output, {'in_memory': True})
+            worksheet = workbook.add_worksheet("RoverData")
+
+            bold = workbook.add_format(
+                {
+                    'bold': True,
+                    'bg_color': 'yellow'
+                }
+            )
+
+            percentage = workbook.add_format({'num_format': '0.0%'})
+
+            worksheet.write("A1", "FPS", bold)
+            worksheet.write("B1", "Kecepatan", bold)
+            worksheet.write("C1", "ArahRover", bold)
+            worksheet.write("D1", "Detected Object", bold)
+            worksheet.write("E1", "Height Object", bold)
+            worksheet.write("F1", "Width Object", bold)
+            worksheet.write("G1", "Center Coordinate", bold)
+            worksheet.write("H1", "Prediction Score", bold)
+            worksheet.write("I1", "TimeStamp", bold)
+
+            for item in range(len(fpsData)):
+                worksheet.write(item+1, 0, fpsData[item])
+                worksheet.write(item+1, 1, speedData[item])
+                worksheet.write(item+1, 2, arahData[item])
+                worksheet.write(item+1, 3, labelData[item])
+                worksheet.write(item+1, 4, heightData[item])
+                worksheet.write(item+1, 5, widthData[item])
+                worksheet.write(item+1, 6, centerData[item])
+                worksheet.write(item+1, 7, scoreData[item], percentage)
+                worksheet.write(item+1, 8, timeStamp[item])
+
+            worksheet.set_column(
+                "D:I",
+                18
+            )
+
+            workbook.close()
+
             arduino.closed_connection()
             main_button.empty()
+
             st.success(
                 'Engine has been stopped, refresh page to turn on back the engine')
 
+            st.download_button(
+                label="Download Data Prediction",
+                data=output.getvalue(),
+                file_name="outputdata.xlsx",
+                mime="application/vnd.ms-excel"
+            )
+
         def write_atributs():
             global speed, arahJalan
-            fps, speed, arahJalan, label, Objheight, Objwidth, center_coor, pred_score = demo.data_atribut()
+            fps, speed, arahJalan, label, Objheight, Objwidth, center_coor, pred_score, time_elapsed, scorePure = demo.data_atribut()
 
             kpi1_text.write(
                 f"<h3 style='text-align: center; color:yellow; '>{fps}</h3>", unsafe_allow_html=True)
@@ -378,6 +543,16 @@ def webcam():
 
             score_text.write(
                 f"<h3 style='text-align: center; color:yellow; '>{pred_score}</h3>", unsafe_allow_html=True)
+
+            fpsData.append(fps)
+            speedData.append(speed)
+            arahData.append(arahJalan)
+            labelData.append(label)
+            heightData.append(Objheight)
+            widthData.append(Objwidth)
+            centerData.append(center_coor)
+            scoreData.append(scorePure)
+            timeStamp.append(time_elapsed)
 
         stoplur = main_button.button(
             'STOP ENGINE', key='stopmang', on_click=store_stop)

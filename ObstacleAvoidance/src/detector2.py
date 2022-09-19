@@ -42,10 +42,14 @@ class VisualizationDemo(object):
 
         self.new_frame_time = 0
         self.prev_frame_time = 0
+        self.time_elapsed = 0
+        self.secoundCounter = 0
 
         self.speed = 0
         self.arahJalan = ""
         self.fps = 0
+
+        self.scoreInt = 0
 
     def get_model(self, nobject, threshold):
         cfg = get_cfg()
@@ -115,6 +119,11 @@ class VisualizationDemo(object):
 
             self.new_frame_time = time.time()
 
+            self.secoundCounter += 1
+            time.gmtime(0)
+            self.time_elapsed = time.strftime(
+                "%H:%M:%S", time.gmtime(self.secoundCounter))
+
             # Initiate Control Car
             self.speed, self.arahJalan = self.processing.process_objects_on_road(
                 frame1, predictions)
@@ -138,10 +147,6 @@ class VisualizationDemo(object):
             # converting the fps into integer
             self.fps = int(self.fps)
 
-            # converting the fps to string so that we can display it on frame
-            # by using putText
-            string_fps = (str(self.fps) + " fps")
-
             try:
                 self.Objwidth = pred_boxes[0][2] - pred_boxes[0][0]
                 self.Objheight = pred_boxes[0][3] - pred_boxes[0][1]
@@ -151,6 +156,7 @@ class VisualizationDemo(object):
 
                 pred_scores.astype(int)
                 self.score = '{:.0%}'.format(pred_scores[0] / 1)
+                self.scoreInt = pred_scores
 
                 int_object = label_obj[0]
                 if int_object == 0:
@@ -175,16 +181,10 @@ class VisualizationDemo(object):
                 self.center_coor = 'None'
                 self.Objwidth = 'None'
                 self.Objheight = 'None'
-                self.score = 'None'
+                self.score = 0
 
             # Converts Matplotlib RGB format to OpenCV BGR format
             vis_frame = cv2.cvtColor(vis_frame.get_image(), cv2.COLOR_RGB2BGR)
-
-            # Send to Arduino
-            # toArduino = ("<" + self.arahJalan + ", " + str(self.speed) + ">")
-            # print()
-            # print(toArduino)
-            # write_data(toArduino)
 
             return vis_frame
 
@@ -212,7 +212,7 @@ class VisualizationDemo(object):
                 yield process_predictions(frame, self.predictor(frame))
 
     def data_atribut(self):
-        return self.fps, self.speed, self.arahJalan, self.object, self.Objheight, self.Objwidth, self.center_coor, self.score
+        return self.fps, self.speed, self.arahJalan, self.object, self.Objheight, self.Objwidth, self.center_coor, self.score, self.time_elapsed, self.scoreInt
 
     def compute_center(self, bounding_boxes):
         # type: (np.ndarray) -> np.ndarray
