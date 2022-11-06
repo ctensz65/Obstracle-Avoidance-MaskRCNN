@@ -146,23 +146,17 @@ def ResizeWithAspectRatio(image, width=None, height=None, inter=cv2.INTER_AREA):
 
 def welcome():
     image1 = Image.open(
-        r"C:\Users\neils\detectron2\InstanceSegmentation\photos_colab\rover3.jpg")
-    image2 = Image.open(
-        r"C:\Users\neils\detectron2\InstanceSegmentation\photos_colab\rover4.jpg")
-    image3 = Image.open(
         r"C:\Users\neils\detectron2\InstanceSegmentation\photos_colab\rover5.jpg")
+    image2 = Image.open(
+        r"C:\Users\neils\detectron2\InstanceSegmentation\photos_colab\IMG_3136.jpg")
+    image3 = Image.open(
+        r"C:\Users\neils\detectron2\InstanceSegmentation\photos_colab\IMG_3124.jpg")
     col1, col2 = st.columns((1, 1))
 
     with col1:
-        st.image(image3, caption='Rover Tampak Depan Samping')
+        st.image(image2)
 
     with col1:
-        st.text("")
-        st.text("")
-        st.text("")
-        st.text("")
-        st.text("")
-        st.text("")
         st.text("")
 
         st.write("""
@@ -176,11 +170,11 @@ def welcome():
             """)
 
         st.markdown(
-            '##### [Unduh Google Colab Notebook Praktikum](https://colab.research.google.com/drive/1x9uygH7Mh-SoBVS1a_uMOnngfDZ6-0q8?usp=sharing)')
+            '##### [Unduh Google Colab Notebook Praktikum](https://colab.research.google.com/drive/16vrmhOQQQ57TF1HTYZ7Hvblm2xW0IKE9?usp=sharing)')
 
     with col2:
-        st.image(image2, caption='Rover Tampak Belakang Samping')
-        st.image(image1, caption='Rover Tampak Samping')
+        st.image(image3)
+        st.image(image1)
 
     st.markdown('---------')
 
@@ -262,7 +256,7 @@ def initialize_atribut():
         st.markdown(original_title, unsafe_allow_html=True)
         kpi1_text = st.markdown(initial_value, unsafe_allow_html=True)
     with kpi2:
-        original_title = '<p style="text-align: center; font-size: 20px;"><strong>Arah Rover</strong></p>'
+        original_title = '<p style="text-align: center; font-size: 20px;"><strong>Arah Robot</strong></p>'
         st.markdown(original_title, unsafe_allow_html=True)
         kpi2_text = st.markdown(initial_value, unsafe_allow_html=True)
     with kpi3:
@@ -588,7 +582,7 @@ def main():
         original_title = '<p style="text-align: center; font-size: 14px;"><strong>Neil Armstrong NIM.18502244004</strong></p>'
         st.markdown(original_title, unsafe_allow_html=True)
 
-    st.title('Obstracle Avoidance Rover using Image Segmentation Mask RCNN')
+    st.title('Obstacle Avoidance Rover using Image Segmentation Mask RCNN')
     st.markdown('----')
 
     st.markdown(

@@ -44,12 +44,12 @@ class TrafficObject(object):
     def check_mundur(centers, frame_width):
         float_formatter = "{:.1f}".format
         np.set_printoptions(formatter={'float_kind': float_formatter})
-        x = np.array(centers[0])
-        y = np.array(centers[1])
+        x = np.array(centers[0][0])
+        y = np.array(centers[0][1])
 
-        if (x > 0 and x < 214):
+        if x > 0 and x < 214:
             arahJalan = 5
-        elif (x >= 427 and x < frame_width):
+        elif x >= 427 and x < frame_width:
             arahJalan = 6
         else:
             arahJalan = 4

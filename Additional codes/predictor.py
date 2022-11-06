@@ -89,12 +89,12 @@ class VisualizationDemo(object):
 
             # converting the fps to string so that we can display it on frame
             # by using putText function
-            fps = str(fps)
+            fps = (str(fps) + " fps")
 
             # Converts Matplotlib RGB format to OpenCV BGR format
             vis_frame = cv2.cvtColor(vis_frame.get_image(), cv2.COLOR_RGB2BGR)
             vis_frame = cv2.putText(
-                vis_frame, fps, (7, 70), self.font, 3, (100, 255, 0), 3, cv2.LINE_AA)
+                vis_frame, fps, (7, 70), self.font, 2, (100, 255, 0), 2, cv2.LINE_AA)
             return vis_frame
 
         frame_gen = self._frame_from_video(video)

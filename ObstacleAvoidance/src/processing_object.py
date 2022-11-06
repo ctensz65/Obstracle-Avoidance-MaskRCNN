@@ -134,7 +134,7 @@ class ObjectsOnRoadProcessor(object):
                     label,
                     height
                     ):
-        global topleft, bottomright, centercoord
+        global topleft, bottomright, center_coord
 
         car_state = {"speed": self.speed_limit,
                      "speed_limit": self.speed_limit}
@@ -155,7 +155,7 @@ class ObjectsOnRoadProcessor(object):
                     self.flagBelok = 0
                 elif label == 2:
                     self.flagBelok = processor.check_mundur(
-                        centercoord, self.width)
+                        center_coord, self.width)
                 else:
                     self.flagBelok = processor.check_lebar(
                         topleft, bottomright, self.width)

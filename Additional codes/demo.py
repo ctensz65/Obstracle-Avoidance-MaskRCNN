@@ -20,7 +20,7 @@ from detectron2.data.datasets import register_coco_instances
 from predictor import VisualizationDemo
 
 WINDOW_NAME = "Bismillah Bisa"
-objectDir = "..\..\dataset"
+objectDir = "../dataset"
 
 
 def setup_cfg(args):
@@ -30,7 +30,7 @@ def setup_cfg(args):
     cfg.merge_from_file(args.config_file)
     # cfg.merge_from_list(args.opts)
     # Set score_threshold for builtin models
-    cfg.MODEL.WEIGHTS = args.opts
+    cfg.MODEL.WEIGHTS = args.model
     cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = args.confidence_threshold
     cfg.DATASETS.TEST = ("Components_val", )
     cfg.MODEL.ROI_HEADS.NUM_CLASSES = 3  # Jumlah classes
@@ -90,6 +90,22 @@ def test_opencv_video_format(codec, file_ext):
         return False
 
 
+def ResizeWithAspectRatio(image, width=None, height=None, inter=cv2.INTER_AREA):
+    dim = None
+    (h, w) = image.shape[:2]
+
+    if width is None and height is None:
+        return image
+    if width is None:
+        r = height / float(h)
+        dim = (int(w * r), height)
+    else:
+        r = width / float(w)
+        dim = (width, int(h * r))
+
+    return cv2.resize(image, dim, interpolation=inter)
+
+
 if __name__ == "__main__":
     mp.set_start_method("spawn", force=True)
     args = get_parser().parse_args()
@@ -109,6 +125,7 @@ if __name__ == "__main__":
         cam = cv2.VideoCapture(0)
         for vis in tqdm.tqdm(demo.run_on_video(cam)):
             cv2.namedWindow(WINDOW_NAME, cv2.WINDOW_NORMAL)
+            # vis = ResizeWithAspectRatio(vis, height=1920)
             cv2.imshow(WINDOW_NAME, vis)
             if cv2.waitKey(1) == 27:
                 break  # esc to quit
