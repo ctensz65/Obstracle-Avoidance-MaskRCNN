@@ -8,9 +8,35 @@ The robot has a form like 4WD Car. Mask R-CNN system will guide the movement of 
 
 ### 1. Detectron2
 
+The project is primarly use detectron2 to provide Mask R-CNN Framework
+
+```
+git clone https://github.com/facebookresearch/detectron2.git
+cd detectron2
+python setup.py build develop
+```
+
+Check this page for detail installation
+
+```
+https://github.com/conansherry/detectron2/blob/master/INSTALL.md
+```
+
 ### 2. PyTorch
 
+Install pytorch directly to match your env specification, check this site
+
+```
+https://pytorch.org/get-started/locally/
+```
+
 ### 3. Microsoft Visual C++ (Fow windows installation)
+
+# Installation
+
+# Train
+
+# Demo Robot
 
 # References
 
