@@ -1,6 +1,6 @@
 # Obstracle Avoidance Robot using Mask R-CNN Image Segmentation
 
-<img src="https://raw.githubusercontent.com/ctensz65/InstanceSegmentation/blob/main/photos_colab/IMG_3123.jpg" width="500" height="600">
+<img src="https://raw.githubusercontent.com/ctensz65/InstanceSegmentation/main/photos_colab/IMG_3123.jpg" width="500" height="600">
 
 The robot has a form like 4WD Car. Mask R-CNN system will guide the movement of the robot to evade obstracles. The robot have a particular response for each objects that detected by the system.
 
