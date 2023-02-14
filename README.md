@@ -2,14 +2,16 @@
 
 <img src="https://raw.githubusercontent.com/ctensz65/InstanceSegmentation/main/photos_colab/IMG_3123.jpg">
 
-The robot has a form like 4WD Car. Mask R-CNN system will guide the movement of the robot to evade obstracles. The robot have a particular response for each objects that detected by the system.
+The robot is designed in the form of a 4-wheel drive car and is equipped with a cutting-edge Mask R-CNN system for obstacle avoidance. The system is capable of recognizing different objects and responding accordingly with specific avoidance maneuvers. In total, there are three types of obstacles that have been programmed to elicit unique evasion strategies. To enhance the user experience, a web-based monitoring application has been developed, allowing real-time visualization of the robot's instance and detection data.
 
 # Dependencies
 
-- Microsoft Visual C++ (For windows installation)
+- Microsoft Visual C++ Build Tools (For windows installation)
 - PyTorch
 - Detectron2
 - Anaconda
+- CUDA Toolkit
+- cuDNN
 
 # Installation
 
@@ -30,7 +32,6 @@ Cloning detectron2 package
 
 ```
 git clone https://github.com/facebookresearch/detectron2.git
-
 python -m pip install -e detectron2
 ```
 
@@ -39,10 +40,10 @@ python -m pip install -e detectron2
 There are 3 objects that become obstacles in this project. I was using [LabelMe](https://github.com/wkentaro/labelme) on annotation image.
 
 I've created Colab Notebook to help and simplify on training Mask R-CNN Model. With using colab, there is no need to prepare devices with better GPU.
-| https://colab.research.google.com/drive/16vrmhOQQQ57TF1HTYZ7Hvblm2xW0IKE9?usp=share_link
+[Colab Notebook](https://colab.research.google.com/drive/16vrmhOQQQ57TF1HTYZ7Hvblm2xW0IKE9?usp=share_link)
 
 Also, I've attached the labeled images with two separate folders (train and val). Hope, it'll help.
-| https://drive.google.com/file/d/18CHMTPAPgW4E0bYBa1YE0qFrjik-afo4/view?usp=share_link
+[LabeledObject](https://drive.google.com/file/d/18CHMTPAPgW4E0bYBa1YE0qFrjik-afo4/view?usp=share_link)
 
 # Demo Robot
 
