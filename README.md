@@ -6,37 +6,52 @@ The robot has a form like 4WD Car. Mask R-CNN system will guide the movement of 
 
 # Dependencies
 
-### 1. Detectron2
-
-The project is primarly use detectron2 to provide Mask R-CNN Framework
-
-```
-git clone https://github.com/facebookresearch/detectron2.git
-cd detectron2
-python setup.py build develop
-```
-
-Check this page for detail installation
-
-```
-https://github.com/conansherry/detectron2/blob/master/INSTALL.md
-```
-
-### 2. PyTorch
-
-Install pytorch directly to match your env specification, check this site
-
-```
-https://pytorch.org/get-started/locally/
-```
-
-### 3. Microsoft Visual C++ (Fow windows installation)
+- Microsoft Visual C++ (For windows installation)
+- PyTorch
+- Detectron2
+- Anaconda
 
 # Installation
 
+### 1. Create new conda env
+
+```
+conda create -n detectron2 python=3.10
+conda activate detectron2
+
+# install pytorch
+# check again your cuda version with pytorch compatibilty
+conda install pytorch torchaudio cudatoolkit=11.3 -c
+```
+
+### 2. Install detectron2
+
+Cloning detectron2 package
+
+```
+git clone https://github.com/facebookresearch/detectron2.git
+
+python -m pip install -e detectron2
+```
+
 # Train
 
+There are 3 objects that become obstacles in this project. I was using [LabelMe](https://github.com/wkentaro/labelme) on annotation image.
+
+I've created Colab Notebook to help and simplify on training Mask R-CNN Model. With using colab, there is no need to prepare devices with better GPU.
+| https://colab.research.google.com/drive/16vrmhOQQQ57TF1HTYZ7Hvblm2xW0IKE9?usp=share_link
+
+Also, I've attached the labeled images with two separate folders (train and val). Hope, it'll help.
+| https://drive.google.com/file/d/18CHMTPAPgW4E0bYBa1YE0qFrjik-afo4/view?usp=share_link
+
 # Demo Robot
+
+Connect arduino to COM PORT
+Run main app with streamlit
+
+```
+streamlit run app.py
+```
 
 # References
 
