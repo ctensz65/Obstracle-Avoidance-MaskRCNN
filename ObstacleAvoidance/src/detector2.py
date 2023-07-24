@@ -1,4 +1,3 @@
-from tkinter import Y
 import cv2
 import torch
 from collections import deque

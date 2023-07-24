@@ -145,12 +145,13 @@ def ResizeWithAspectRatio(image, width=None, height=None, inter=cv2.INTER_AREA):
 
 
 def welcome():
+    '''
     image1 = Image.open(
-        r"C:\Users\neils\detectron2\InstanceSegmentation\photos_colab\rover5.jpg")
+        r"C:\Users\ctnsz\detectron2\InstanceSegmentation\photos_colab\rover5.jpg")
     image2 = Image.open(
-        r"C:\Users\neils\detectron2\InstanceSegmentation\photos_colab\IMG_3136.jpg")
+        r"C:\Users\ctnsz\detectron2\InstanceSegmentation\photos_colab\IMG_3136.jpg")
     image3 = Image.open(
-        r"C:\Users\neils\detectron2\InstanceSegmentation\photos_colab\IMG_3124.jpg")
+        r"C:\Users\ctnsz\detectron2\InstanceSegmentation\photos_colab\IMG_3124.jpg")
     col1, col2 = st.columns((1, 1))
 
     with col1:
@@ -175,7 +176,7 @@ def welcome():
     with col2:
         st.image(image3)
         st.image(image1)
-
+    '''
     st.markdown('---------')
 
     st.subheader('Mask R-CNN')
@@ -202,9 +203,6 @@ def welcome():
 
     st.markdown(
         "![Alt Text](https://curiousily.com/static/dff66fd0972574ae284f7df9533d369f/3e3fe/detectron2-logo.png)")
-
-    # image1 = Image.open('mask_rcnn.png')
-    # st.image(image1)
 
     st.write("""
                 Terdapat beragam framework atau libraries yang mendukung proses pelatihan dan visualisasi model Mask R-CNN. \

@@ -1,6 +1,4 @@
-from glob import glob
 import time
-from tkinter import E
 from objects import *
 
 from detectron2.config import get_cfg
