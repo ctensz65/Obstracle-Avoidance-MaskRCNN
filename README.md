@@ -47,12 +47,6 @@ git clone https://github.com/facebookresearch/detectron2.git
 python -m pip install -e detectron2
 ```
 
-### 5. Install Streamlit
-
-```
-pip3 install streamlit
-```
-
 # Train
 
 There are 3 objects that become obstacles in this project. I was using [LabelMe](https://github.com/wkentaro/labelme) on annotation image.
@@ -76,6 +70,12 @@ streamlit run app.py
 ```
 
 Access the localhost with given port of streamlit.
+
+<img src="https://raw.githubusercontent.com/ctensz65/InstanceSegmentation/main/photos_colab/dashboard1">
+
+<img src="https://raw.githubusercontent.com/ctensz65/InstanceSegmentation/main/photos_colab/dashboard3">
+
+<img src="https://raw.githubusercontent.com/ctensz65/InstanceSegmentation/main/photos_colab/dashboard2">
 
 # References
 
