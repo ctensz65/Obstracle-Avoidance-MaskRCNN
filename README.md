@@ -71,11 +71,11 @@ streamlit run app.py
 
 Access the localhost with given port of streamlit.
 
-<img src="https://raw.githubusercontent.com/ctensz65/InstanceSegmentation/main/photos_colab/dashboard1">
+<img src="https://raw.githubusercontent.com/ctensz65/InstanceSegmentation/main/photos_colab/dashboard1.jpg">
 
-<img src="https://raw.githubusercontent.com/ctensz65/InstanceSegmentation/main/photos_colab/dashboard3">
+<img src="https://raw.githubusercontent.com/ctensz65/InstanceSegmentation/main/photos_colab/dashboard3.jpg">
 
-<img src="https://raw.githubusercontent.com/ctensz65/InstanceSegmentation/main/photos_colab/dashboard2">
+<img src="https://raw.githubusercontent.com/ctensz65/InstanceSegmentation/main/photos_colab/dashboard2.jpg">
 
 # References
 
